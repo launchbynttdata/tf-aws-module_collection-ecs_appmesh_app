@@ -167,7 +167,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git | 1.0.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
 | <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0.0 |
 | <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
 | <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0.0 |

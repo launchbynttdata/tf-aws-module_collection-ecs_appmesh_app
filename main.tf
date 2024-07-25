@@ -11,8 +11,8 @@
 // limitations under the License.
 
 module "resource_names" {
-  #TODO: Update later, could not locate in registry
-  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
 
   for_each = var.resource_names_map
 
