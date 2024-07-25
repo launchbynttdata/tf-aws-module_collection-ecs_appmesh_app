@@ -90,7 +90,7 @@ variable "resource_names_map" {
   ))
   default = {
     app_ecs_sg = {
-      name       = "app-sg"
+      name       = "appsg"
       max_length = 60
     }
     virtual_service = {
@@ -123,19 +123,19 @@ variable "resource_names_map" {
       max_length = 60
     }
     task_exec_role = {
-      name       = "exec-role"
+      name       = "execrole"
       max_length = 60
     }
     task_role = {
-      name       = "task-role"
+      name       = "taskrole"
       max_length = 60
     }
     task_exec_policy = {
-      name       = "exec-plcy"
+      name       = "execplcy"
       max_length = 60
     }
     task_policy = {
-      name       = "task-plcy"
+      name       = "taskplcy"
       max_length = 60
     }
     ecs_app = {
