@@ -11,9 +11,9 @@
 // limitations under the License.
 
 terraform {
-  required_version = ">= 1.5.0, <= 1.5.5"
+  required_version = ">= 1.5.0, < 1.6"
 
   required_providers {
-    aws = ">= 3.28.0"
+    aws = ">= 5.0"
   }
 }

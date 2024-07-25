@@ -1,4 +1,4 @@
-# tf-aws-wrapper_module-ecs_appmesh_app
+# tf-aws-module_collection-ecs_appmesh_app
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -156,8 +156,8 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, <= 1.5.5 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.28.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, < 1.6 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
 
 ## Providers
 
@@ -167,21 +167,21 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/nexient-llc/tf-module-resource_name.git | 0.1.0 |
-| <a name="module_sds"></a> [sds](#module\_sds) | git::https://github.com/nexient-llc/tf-aws-module-service_discovery_service.git | 0.1.0 |
-| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | git::https://github.com/nexient-llc/tf-aws-module-acm_private_cert.git | 0.1.0 |
-| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_router.git | 0.1.0 |
-| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_route.git | 0.1.0 |
-| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_node.git | 0.1.0 |
-| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_service.git | 0.1.0 |
-| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | git::https://github.com/nexient-llc/tf-aws-module-appmesh_gateway_route.git | 0.1.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git | 1.0.0 |
+| <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0.0 |
+| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
+| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0.0 |
+| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0.0 |
+| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0.0 |
+| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0.0 |
+| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git | 1.0.1 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_container_definitions"></a> [container\_definitions](#module\_container\_definitions) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |
 | <a name="module_sg_ecs_service"></a> [sg\_ecs\_service](#module\_sg\_ecs\_service) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_app_ecs_service"></a> [app\_ecs\_service](#module\_app\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.69.0 |
-| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | git::https://github.com/nexient-llc/tf-aws-module-autoscaling_target.git | 0.1.0 |
-| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | git::https://github.com/nexient-llc/tf-aws-module-autoscaling_policy.git | 0.1.0 |
+| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws | ~> 1.0.0 |
+| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws | ~> 1.0.0 |
 
 ## Resources
 
@@ -191,12 +191,13 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_naming_prefix"></a> [naming\_prefix](#input\_naming\_prefix) | Prefix for the provisioned resources. | `string` | `"demo-app"` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | Environment in which the resource should be provisioned like dev, qa, prod etc. | `string` | `"dev"` | no |
-| <a name="input_environment_number"></a> [environment\_number](#input\_environment\_number) | The environment count for the respective environment. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
-| <a name="input_resource_number"></a> [resource\_number](#input\_resource\_number) | The resource count for the respective resource. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
+| <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | (Required) Name of the product family for which the resource is created.<br>    Example: org\_name, department\_name. | `string` | `"launch"` | no |
+| <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | (Required) Name of the product service for which the resource is created.<br>    For example, backend, frontend, middleware etc. | `string` | `"backend"` | no |
+| <a name="input_class_env"></a> [class\_env](#input\_class\_env) | (Required) Environment where resource is going to be deployed. For example. dev, qa, uat | `string` | `"dev"` | no |
+| <a name="input_instance_env"></a> [instance\_env](#input\_instance\_env) | Number that represents the instance of the environment. | `number` | `0` | no |
+| <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Number that represents the instance of the resource. | `number` | `0` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"us-east-2"` | no |
-| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-module-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "acm": {<br>    "max_length": 60,<br>    "name": "acm"<br>  },<br>  "app_ecs_sg": {<br>    "max_length": 60,<br>    "name": "app-sg"<br>  },<br>  "ecs_app": {<br>    "max_length": 60,<br>    "name": "svc"<br>  },<br>  "ecs_td": {<br>    "max_length": 60,<br>    "name": "td"<br>  },<br>  "gateway_route": {<br>    "max_length": 60,<br>    "name": "gwroute"<br>  },<br>  "router_route": {<br>    "max_length": 60,<br>    "name": "vroute"<br>  },<br>  "service_discovery_service": {<br>    "max_length": 60,<br>    "name": "vsvc"<br>  },<br>  "task_exec_policy": {<br>    "max_length": 60,<br>    "name": "exec-plcy"<br>  },<br>  "task_exec_role": {<br>    "max_length": 60,<br>    "name": "exec-role"<br>  },<br>  "task_policy": {<br>    "max_length": 60,<br>    "name": "task-plcy"<br>  },<br>  "task_role": {<br>    "max_length": 60,<br>    "name": "task-role"<br>  },<br>  "virtual_node": {<br>    "max_length": 60,<br>    "name": "vnode"<br>  },<br>  "virtual_router": {<br>    "max_length": 60,<br>    "name": "vrouter"<br>  },<br>  "virtual_service": {<br>    "max_length": 60,<br>    "name": "vsvc"<br>  }<br>}</pre> | no |
+| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "acm": {<br>    "max_length": 60,<br>    "name": "acm"<br>  },<br>  "app_ecs_sg": {<br>    "max_length": 60,<br>    "name": "app-sg"<br>  },<br>  "ecs_app": {<br>    "max_length": 60,<br>    "name": "svc"<br>  },<br>  "ecs_td": {<br>    "max_length": 60,<br>    "name": "td"<br>  },<br>  "gateway_route": {<br>    "max_length": 60,<br>    "name": "gwroute"<br>  },<br>  "router_route": {<br>    "max_length": 60,<br>    "name": "vroute"<br>  },<br>  "service_discovery_service": {<br>    "max_length": 60,<br>    "name": "vsvc"<br>  },<br>  "task_exec_policy": {<br>    "max_length": 60,<br>    "name": "exec-plcy"<br>  },<br>  "task_exec_role": {<br>    "max_length": 60,<br>    "name": "exec-role"<br>  },<br>  "task_policy": {<br>    "max_length": 60,<br>    "name": "task-plcy"<br>  },<br>  "task_role": {<br>    "max_length": 60,<br>    "name": "task-role"<br>  },<br>  "virtual_node": {<br>    "max_length": 60,<br>    "name": "vnode"<br>  },<br>  "virtual_router": {<br>    "max_length": 60,<br>    "name": "vrouter"<br>  },<br>  "virtual_service": {<br>    "max_length": 60,<br>    "name": "vsvc"<br>  }<br>}</pre> | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID of the VPC where infrastructure will be provisioned | `string` | n/a | yes |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets | `list(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | List of public subnets | `list(string)` | `[]` | no |

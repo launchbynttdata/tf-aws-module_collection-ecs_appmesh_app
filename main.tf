@@ -11,24 +11,27 @@
 // limitations under the License.
 
 module "resource_names" {
-  source = "git::https://github.com/nexient-llc/tf-module-resource_name.git?ref=0.1.0"
+  #TODO: Update later, could not locate in registry
+  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.0"
 
   for_each = var.resource_names_map
 
-  logical_product_name = var.naming_prefix
-  region               = join("", split("-", var.region))
-  class_env            = var.environment
-  cloud_resource_type  = each.value.name
-  instance_env         = var.environment_number
-  instance_resource    = var.resource_number
-  maximum_length       = each.value.max_length
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  region                  = join("", split("-", var.region))
+  class_env               = var.class_env
+  cloud_resource_type     = each.value.name
+  instance_env            = var.instance_env
+  instance_resource       = var.instance_resource
+  maximum_length          = each.value.max_length
 }
 
 # Service Discovery services for Virtual Service
 # The service discovery name should be the same name that is used in ECS service for discovery. The private certs
 # below must be provisioned for this name
 module "sds" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-service_discovery_service.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
+  version = "~> 1.0.0"
 
   name         = module.resource_names["service_discovery_service"].standard
   namespace_id = var.namespace_id
@@ -38,7 +41,8 @@ module "sds" {
 
 # Create private certificates for virtual Service
 module "private_cert" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-acm_private_cert.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
+  version = "~> 1.0.0"
 
   private_ca_arn = var.private_ca_arn
   # This domain name should be the SDS domain name used in the ECS service and must be < 64 characters
@@ -49,7 +53,8 @@ module "private_cert" {
 }
 
 module "virtual_router" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_router.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws"
+  version = "~> 1.0.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
@@ -64,7 +69,8 @@ module "virtual_router" {
 }
 
 module "virtual_route" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh_route.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws"
+  version = "~> 1.0.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
@@ -93,7 +99,8 @@ module "virtual_route" {
 
 # Virtual Node is the backend for Virtual Service and it connects the virtual service with the ECS Service using Service Discovery
 module "virtual_node" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_node.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws"
+  version = "~> 1.0.0"
 
   app_mesh_id                = var.app_mesh_id
   name                       = module.resource_names["virtual_node"].standard
@@ -116,7 +123,8 @@ module "virtual_node" {
 
 # A virtual service for the ECS app
 module "virtual_service" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh_virtual_service.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws"
+  version = "~> 1.0.0"
 
   name                = module.resource_names["virtual_service"].standard
   app_mesh_name       = var.app_mesh_id
@@ -131,7 +139,8 @@ module "gateway_route" {
   # If the service needs an ingress from the outside, a gateway route needs to be created
   count = var.create_gateway_route ? 1 : 0
 
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh_gateway_route.git?ref=0.1.0"
+  #TODO: Update to registry once make check passes for the below repo after story 130 is complete
+  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git?ref=1.0.1"
 
   name                 = module.resource_names["gateway_route"].standard
   virtual_gateway_name = var.virtual_gateway_name
@@ -159,10 +168,10 @@ module "ecs_task_execution_policy" {
   version = "~> 0.4.0"
 
   enabled                       = true
-  namespace                     = "${var.naming_prefix}-${join("", split("-", var.region))}"
-  stage                         = var.environment_number
-  environment                   = var.environment
-  name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.resource_number}"
+  namespace                     = "${var.logical_product_family}-${join("", split("-", var.region))}"
+  stage                         = var.instance_env
+  environment                   = var.class_env
+  name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
   iam_policy_enabled            = true
   iam_override_policy_documents = [var.ecs_exec_role_custom_policy_json]
 }
@@ -174,10 +183,10 @@ module "ecs_task_policy" {
   version = "~> 0.4.0"
 
   enabled                     = true
-  namespace                   = "${var.naming_prefix}-${join("", split("-", var.region))}"
-  stage                       = var.environment_number
-  environment                 = var.environment
-  name                        = "${var.resource_names_map["task_policy"].name}-${var.resource_number}"
+  namespace                   = "${var.logical_product_family}-${join("", split("-", var.region))}"
+  stage                       = var.instance_env
+  environment                 = var.class_env
+  name                        = "${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
   iam_policy_enabled          = true
   iam_source_policy_documents = local.ecs_role_custom_policy_json
 }
@@ -244,11 +253,11 @@ module "app_ecs_service" {
   version = "~> 0.69.0"
 
   # This module generates its own name. Can't use the labels module
-  namespace                          = "${var.naming_prefix}-${join("", split("-", var.region))}"
-  stage                              = var.environment_number
+  namespace                          = "${var.logical_product_family}-${join("", split("-", var.region))}"
+  stage                              = var.instance_env
   name                               = var.resource_names_map["ecs_app"].name
-  environment                        = var.environment
-  attributes                         = [var.resource_number]
+  environment                        = var.class_env
+  attributes                         = [var.instance_resource]
   delimiter                          = "-"
   container_definition_json          = jsonencode([for name, container in module.container_definitions : container.json_map_object])
   ecs_cluster_arn                    = var.ecs_cluster_arn
@@ -299,7 +308,8 @@ module "app_ecs_service" {
 }
 
 module "autoscaling_target" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-autoscaling_target.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws"
+  version = "~> 1.0.0"
 
   count = var.autoscaling_enabled ? 1 : 0
 
@@ -313,7 +323,8 @@ module "autoscaling_target" {
 }
 
 module "autoscaling_policies" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-autoscaling_policy.git?ref=0.1.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws"
+  version = "~> 1.0.0"
 
   for_each = var.autoscaling_enabled && length(var.autoscaling_policies) > 0 ? var.autoscaling_policies : {}
 

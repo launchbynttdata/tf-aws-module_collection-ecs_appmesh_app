@@ -57,7 +57,7 @@ locals {
 
   # ACM first domain name must be < 64 characters
   actual_domain_name  = "${module.resource_names["virtual_service"].standard}.${var.namespace_name}"
-  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.naming_prefix}-vsvc.${var.namespace_name}"
+  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-vsvc.${var.namespace_name}"
   private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
 
   # Health check for app container to evict unhealthy tasks
