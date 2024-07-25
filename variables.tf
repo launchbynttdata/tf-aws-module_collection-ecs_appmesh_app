@@ -160,12 +160,6 @@ variable "private_subnets" {
   type        = list(string)
 }
 
-variable "public_subnets" {
-  description = "List of public subnets"
-  type        = list(string)
-  default     = []
-}
-
 ### Cloud Map Namespace related variables
 
 variable "namespace_name" {
@@ -396,18 +390,6 @@ variable "ecs_security_group" {
   default = null
 }
 
-variable "ecs_exec_role_managed_policy_arns" {
-  description = "A list (ARNs) of AWS managed policies to be attached to the ECS Task Exec role."
-  type        = list(string)
-  default     = []
-}
-
-variable "ecs_role_managed_policy_arns" {
-  description = "A list (ARNs) of AWS managed policies to be attached to the ECS Task role."
-  type        = list(string)
-  default     = []
-}
-
 variable "ecs_exec_role_custom_policy_json" {
   description = "Custom policy to attach to ecs task execution role. Document must be valid json."
   type        = string
@@ -460,11 +442,13 @@ variable "ignore_changes_desired_count" {
 }
 
 variable "task_cpu" {
+  type        = number
   description = "Amount of CPU to be allocated to the task"
   default     = 512
 }
 
 variable "task_memory" {
+  type        = number
   description = "Amount of Memory to be allocated to the task"
   default     = 1024
 }
