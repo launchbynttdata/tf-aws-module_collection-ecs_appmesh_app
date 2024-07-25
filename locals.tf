@@ -124,10 +124,10 @@ locals {
   }
 
   default_mitm_proxy_environment = {
-    UPSTREAM_PORT             = var.app_ports[0]
+    UPSTREAM_PORT             = length(var.app_ports) > 0 ? var.app_ports[0] : null
     UPSTREAM_PROTOCOL         = "http"
     UPSTREAM_HOST             = "localhost"
-    LISTEN_PORT               = var.mitm_proxy_ports[0]
+    LISTEN_PORT               = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
     LOG_LEVEL                 = "info"
     HEADER_ENCAPSULATION_MODE = "encode"
   }
@@ -165,7 +165,6 @@ locals {
   }]
 
   containers = merge(local.default_containers, { for container in var.extra_containers : container.name => container })
-  app_mounts = var.app_mounts
 
   # This policy is required by AppMesh to pull certificates from PCA
   ecs_role_default_policy_json = <<EOF

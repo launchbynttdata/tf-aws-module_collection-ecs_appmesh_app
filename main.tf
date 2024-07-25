@@ -11,8 +11,8 @@
 // limitations under the License.
 
 module "resource_names" {
-  #TODO: Update later, could not locate in registry
-  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
 
   for_each = var.resource_names_map
 
@@ -78,11 +78,11 @@ module "virtual_route" {
   priority            = 0
   app_mesh_name       = var.app_mesh_id
   virtual_router_name = module.virtual_router[0].name
-  virtual_router_port = var.mitm_proxy_ports[0]
+  virtual_router_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
   route_targets = [
     {
       virtual_node_name = module.virtual_node.name
-      virtual_node_port = var.mitm_proxy_ports[0]
+      virtual_node_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
       weight            = 100
     }
   ]
@@ -147,7 +147,7 @@ module "gateway_route" {
   virtual_service_name = module.resource_names["virtual_service"].standard
   # Currently supports only 1 gateway route for the first port in the list of application ports. Need to strategize support of multiple ports
   # The traffic is forwarded as: vgw -> app_envoy -> mitmproxy(encoder) -> app
-  virtual_service_port = var.mitm_proxy_ports[0]
+  virtual_service_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
   app_mesh_name        = var.app_mesh_id
 
   match_hostname_exact  = var.match_hostname_exact
