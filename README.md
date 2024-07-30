@@ -174,7 +174,7 @@ No providers.
 | <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0.0 |
 | <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0.0 |
 | <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0.0 |
-| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git | 1.0.1 |
+| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws | ~> 1.0.0 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_container_definitions"></a> [container\_definitions](#module\_container\_definitions) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |

@@ -139,8 +139,8 @@ module "gateway_route" {
   # If the service needs an ingress from the outside, a gateway route needs to be created
   count = var.create_gateway_route ? 1 : 0
 
-  #TODO: Update to registry once make check passes for the below repo after story 130 is complete
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws"
+  version = "~> 1.0.0"
 
   name                 = module.resource_names["gateway_route"].standard
   virtual_gateway_name = var.virtual_gateway_name
