@@ -118,7 +118,7 @@ variable "resource_names_map" {
       max_length = 60
     }
     service_discovery_service = {
-      # should be same as the service disovery service used in the ECS service
+      # should be same as the service discovery service used in the ECS service
       name       = "vsvc"
       max_length = 60
     }
