@@ -60,10 +60,10 @@ module "virtual_router" {
 
   app_mesh_name = var.app_mesh_id
   name          = module.resource_names["virtual_router"].standard
-  listeners = [for port in var.mitm_proxy_ports : {
-    protocol = "http"
-    port     = port
-  }]
+  #listeners = [for port in var. : {
+  #  protocol = "http"
+  #  port     = port
+  #}]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_router"].standard })
 }
@@ -78,11 +78,11 @@ module "virtual_route" {
   priority            = 0
   app_mesh_name       = var.app_mesh_id
   virtual_router_name = module.virtual_router[0].name
-  virtual_router_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+  virtual_router_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
   route_targets = [
     {
       virtual_node_name = module.virtual_node.name
-      virtual_node_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+      virtual_node_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
       weight            = 100
     }
   ]
@@ -107,7 +107,7 @@ module "virtual_node" {
   namespace_name             = var.namespace_name
   service_name               = module.resource_names["virtual_service"].standard
   tls_enforce                = var.tls_enforce
-  ports                      = var.mitm_proxy_ports
+  ports                      = var.app_ports
   protocol                   = "http"
   certificate_authority_arns = [var.private_ca_arn]
   acm_certificate_arn        = module.private_cert.certificate_arn
@@ -135,7 +135,6 @@ module "virtual_service" {
 }
 
 module "gateway_route" {
-
   # If the service needs an ingress from the outside, a gateway route needs to be created
   count = var.create_gateway_route ? 1 : 0
 
@@ -146,8 +145,8 @@ module "gateway_route" {
   virtual_gateway_name = var.virtual_gateway_name
   virtual_service_name = module.resource_names["virtual_service"].standard
   # Currently supports only 1 gateway route for the first port in the list of application ports. Need to strategize support of multiple ports
-  # The traffic is forwarded as: vgw -> app_envoy -> mitmproxy(encoder) -> app
-  virtual_service_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+  # The traffic is forwarded as: vgw -> app_envoy -> app
+  virtual_service_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
   app_mesh_name        = var.app_mesh_id
 
   match_hostname_exact  = var.match_hostname_exact
@@ -294,8 +293,7 @@ module "app_ecs_service" {
     type           = "APPMESH"
     container_name = local.envoy_container.name
     properties = {
-      # Envoy proxies traffic to mitmproxy (encoder) which then sends it to the app.
-      AppPorts = join(",", var.mitm_proxy_ports)
+      AppPorts = join(",", var.app_ports)
       # These values are static and doesn't change for App Mesh. Hence, are hard-coded
       EgressIgnoredIPs = "169.254.170.2,169.254.169.254"
       IgnoredUID       = "1337"

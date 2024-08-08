@@ -221,13 +221,7 @@ variable "router_retry_policy" {
 ## Virtual Node related variables
 
 variable "app_ports" {
-  description = "The port(s) at which the application is running. These ports will be accessed by the mitm-proxy to forward traffic."
-  type        = list(number)
-  default     = []
-}
-
-variable "mitm_proxy_ports" {
-  description = "The port(s) at which the mitm_proxy (encoder) is running. The same ports are used as listeners in Virtual Node"
+  description = "The port(s) at which the application is running, used as listeners in Virtual Node."
   type        = list(number)
   default     = []
 }
@@ -288,24 +282,6 @@ variable "app_environment" {
 
 variable "app_secrets" {
   description = "Secrets to be injected into the application containers. Map of secret Manager ARNs"
-  type        = map(string)
-  default     = {}
-}
-
-variable "mitm_proxy_image_tag" {
-  description = "The docker image of the mitm-proxy in the format <docker_image>:<tag>"
-  type        = string
-  default     = ""
-}
-
-variable "mitm_proxy_environment" {
-  description = "Environment variables to be injected into the mitm-proxy encoder container"
-  type        = map(string)
-  default     = {}
-}
-
-variable "mitm_proxy_secrets" {
-  description = "Secrets to be injected into the mitm-proxy encoder container. Map of secret Manager ARNs"
   type        = map(string)
   default     = {}
 }

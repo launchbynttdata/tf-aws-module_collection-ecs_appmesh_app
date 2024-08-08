@@ -16,6 +16,8 @@ locals {
     provisioner = "Terraform"
   }
 
+  naming_prefix = "${var.logical_product_family}-${var.logical_product_service}"
+
   ingress_with_sg_block = coalesce(try(lookup(var.ecs_security_group, "ingress_with_sg", []), []), [])
   ingress_with_sg = length(local.ingress_with_sg_block) > 0 ? [
     for sg in local.ingress_with_sg_block : {
@@ -57,7 +59,7 @@ locals {
 
   # ACM first domain name must be < 64 characters
   actual_domain_name  = "${module.resource_names["virtual_service"].standard}.${var.namespace_name}"
-  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${var.logical_product_family}-vsvc.${var.namespace_name}"
+  updated_domain_name = length(local.actual_domain_name) < 64 ? local.actual_domain_name : "${local.naming_prefix}-vsvc.${var.namespace_name}"
   private_cert_san    = local.actual_domain_name != local.updated_domain_name ? [local.actual_domain_name] : []
 
   # Health check for app container to evict unhealthy tasks
@@ -123,40 +125,9 @@ locals {
     mount_points             = var.app_mounts
   }
 
-  default_mitm_proxy_environment = {
-    UPSTREAM_PORT             = length(var.app_ports) > 0 ? var.app_ports[0] : null
-    UPSTREAM_PROTOCOL         = "http"
-    UPSTREAM_HOST             = "localhost"
-    LISTEN_PORT               = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
-    LOG_LEVEL                 = "info"
-    HEADER_ENCAPSULATION_MODE = "encode"
-  }
-
-  mitm_encoder_container = {
-    # Name is fixed as app. Its used by envoy proxy and ALB.
-    name      = "encoder"
-    image_tag = var.mitm_proxy_image_tag
-    # Supports multiple application ports
-    port_mappings = [for port in var.mitm_proxy_ports : {
-      hostPort      = port
-      protocol      = "tcp"
-      containerPort = port
-    }]
-
-    environment              = merge(local.default_mitm_proxy_environment, var.mitm_proxy_environment)
-    secrets                  = var.mitm_proxy_secrets
-    memory                   = null
-    cpu                      = 0
-    memory_reservation       = null
-    essential                = true
-    readonly_root_filesystem = false
-    depends_on               = concat(local.app_depends_on_default, var.app_depends_on_extra)
-  }
-
   default_containers = {
-    envoy   = local.envoy_container
-    app     = local.app_container
-    encoder = local.mitm_encoder_container
+    envoy = local.envoy_container
+    app   = local.app_container
   }
 
   app_depends_on_default = [{
