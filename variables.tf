@@ -223,7 +223,6 @@ variable "router_retry_policy" {
 variable "app_ports" {
   description = "The port(s) at which the application is running, used as listeners in Virtual Node."
   type        = list(number)
-  default     = []
 }
 
 variable "virtual_node_app_health_check_path" {
