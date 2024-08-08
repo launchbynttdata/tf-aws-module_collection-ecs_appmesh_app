@@ -156,8 +156,8 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, < 1.6 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, <= 1.5.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 
 ## Providers
 
@@ -168,20 +168,20 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
-| <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0.0 |
-| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
-| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0.0 |
-| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0.0 |
-| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0.0 |
-| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0.0 |
-| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git | 1.0.1 |
+| <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0 |
+| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0 |
+| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0 |
+| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0 |
+| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0 |
+| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0 |
+| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws | ~> 1.0 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_container_definitions"></a> [container\_definitions](#module\_container\_definitions) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |
 | <a name="module_sg_ecs_service"></a> [sg\_ecs\_service](#module\_sg\_ecs\_service) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
-| <a name="module_app_ecs_service"></a> [app\_ecs\_service](#module\_app\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.69.0 |
-| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws | ~> 1.0.0 |
-| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws | ~> 1.0.0 |
+| <a name="module_app_ecs_service"></a> [app\_ecs\_service](#module\_app\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.76.0 |
+| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws | ~> 1.0 |
+| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws | ~> 1.0 |
 
 ## Resources
 
@@ -208,8 +208,7 @@ No resources.
 | <a name="input_tls_enforce"></a> [tls\_enforce](#input\_tls\_enforce) | Whether to enforce TLS in App Mesh Virtual Service/Node | `bool` | `true` | no |
 | <a name="input_enable_virtual_router"></a> [enable\_virtual\_router](#input\_enable\_virtual\_router) | Whether to create a Virtual Router and route traffic to virtual Node via it | `bool` | `true` | no |
 | <a name="input_router_retry_policy"></a> [router\_retry\_policy](#input\_router\_retry\_policy) | Rules for retry policies to be applied to this route | <pre>object({<br>    http_retry_events = list(string)<br>    max_retries       = number<br>    per_entry_timeout = object({<br>      unit  = string<br>      value = number<br>    })<br>    tcp_retry_events = list(string)<br>  })</pre> | `null` | no |
-| <a name="input_app_ports"></a> [app\_ports](#input\_app\_ports) | The port(s) at which the application is running. These ports will be accessed by the mitm-proxy to forward traffic. | `list(number)` | `[]` | no |
-| <a name="input_mitm_proxy_ports"></a> [mitm\_proxy\_ports](#input\_mitm\_proxy\_ports) | The port(s) at which the mitm\_proxy (encoder) is running. The same ports are used as listeners in Virtual Node | `list(number)` | `[]` | no |
+| <a name="input_app_ports"></a> [app\_ports](#input\_app\_ports) | The port(s) at which the application is running, used as listeners in Virtual Node. | `list(number)` | n/a | yes |
 | <a name="input_virtual_node_app_health_check_path"></a> [virtual\_node\_app\_health\_check\_path](#input\_virtual\_node\_app\_health\_check\_path) | Path in the app for Virtual Node to perform health check.<br>    If empty, then no health check is configured on the Virtual Node<br>    Note: Virtual node just logs the health check output to envoy proxy logs, but doesn't evict<br>    the unhealthy containers. | `string` | `"/"` | no |
 | <a name="input_idle_duration"></a> [idle\_duration](#input\_idle\_duration) | Idle duration for all the listeners | <pre>object({<br>    unit  = string<br>    value = number<br>  })</pre> | `null` | no |
 | <a name="input_per_request_timeout"></a> [per\_request\_timeout](#input\_per\_request\_timeout) | Per Request timeout for all the listeners | <pre>object({<br>    unit  = string<br>    value = number<br>  })</pre> | `null` | no |
@@ -218,9 +217,6 @@ No resources.
 | <a name="input_app_image_tag"></a> [app\_image\_tag](#input\_app\_image\_tag) | The docker image of the application in the format <docker\_image>:<tag> | `string` | n/a | yes |
 | <a name="input_app_environment"></a> [app\_environment](#input\_app\_environment) | Environment variables to be injected into the application containers | `map(string)` | `{}` | no |
 | <a name="input_app_secrets"></a> [app\_secrets](#input\_app\_secrets) | Secrets to be injected into the application containers. Map of secret Manager ARNs | `map(string)` | `{}` | no |
-| <a name="input_mitm_proxy_image_tag"></a> [mitm\_proxy\_image\_tag](#input\_mitm\_proxy\_image\_tag) | The docker image of the mitm-proxy in the format <docker\_image>:<tag> | `string` | `""` | no |
-| <a name="input_mitm_proxy_environment"></a> [mitm\_proxy\_environment](#input\_mitm\_proxy\_environment) | Environment variables to be injected into the mitm-proxy encoder container | `map(string)` | `{}` | no |
-| <a name="input_mitm_proxy_secrets"></a> [mitm\_proxy\_secrets](#input\_mitm\_proxy\_secrets) | Secrets to be injected into the mitm-proxy encoder container. Map of secret Manager ARNs | `map(string)` | `{}` | no |
 | <a name="input_autoscaling_enabled"></a> [autoscaling\_enabled](#input\_autoscaling\_enabled) | Flag to determine if auto scaling is enabled for the application | `bool` | `false` | no |
 | <a name="input_min_capacity"></a> [min\_capacity](#input\_min\_capacity) | Min capacity of the scalable target. | `number` | `1` | no |
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Max capacity of the scalable target. | `number` | `4` | no |

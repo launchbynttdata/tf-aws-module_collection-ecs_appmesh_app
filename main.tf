@@ -31,7 +31,7 @@ module "resource_names" {
 # below must be provisioned for this name
 module "sds" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name         = module.resource_names["service_discovery_service"].standard
   namespace_id = var.namespace_id
@@ -42,7 +42,7 @@ module "sds" {
 # Create private certificates for virtual Service
 module "private_cert" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   private_ca_arn = var.private_ca_arn
   # This domain name should be the SDS domain name used in the ECS service and must be < 64 characters
@@ -54,13 +54,13 @@ module "private_cert" {
 
 module "virtual_router" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
   app_mesh_name = var.app_mesh_id
   name          = module.resource_names["virtual_router"].standard
-  listeners = [for port in var.mitm_proxy_ports : {
+  listeners = [for port in var.app_ports : {
     protocol = "http"
     port     = port
   }]
@@ -70,7 +70,7 @@ module "virtual_router" {
 
 module "virtual_route" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
@@ -78,11 +78,11 @@ module "virtual_route" {
   priority            = 0
   app_mesh_name       = var.app_mesh_id
   virtual_router_name = module.virtual_router[0].name
-  virtual_router_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+  virtual_router_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
   route_targets = [
     {
       virtual_node_name = module.virtual_node.name
-      virtual_node_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+      virtual_node_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
       weight            = 100
     }
   ]
@@ -100,14 +100,14 @@ module "virtual_route" {
 # Virtual Node is the backend for Virtual Service and it connects the virtual service with the ECS Service using Service Discovery
 module "virtual_node" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   app_mesh_id                = var.app_mesh_id
   name                       = module.resource_names["virtual_node"].standard
   namespace_name             = var.namespace_name
   service_name               = module.resource_names["virtual_service"].standard
   tls_enforce                = var.tls_enforce
-  ports                      = var.mitm_proxy_ports
+  ports                      = var.app_ports
   protocol                   = "http"
   certificate_authority_arns = [var.private_ca_arn]
   acm_certificate_arn        = module.private_cert.certificate_arn
@@ -124,7 +124,7 @@ module "virtual_node" {
 # A virtual service for the ECS app
 module "virtual_service" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name                = module.resource_names["virtual_service"].standard
   app_mesh_name       = var.app_mesh_id
@@ -135,19 +135,18 @@ module "virtual_service" {
 }
 
 module "gateway_route" {
-
   # If the service needs an ingress from the outside, a gateway route needs to be created
   count = var.create_gateway_route ? 1 : 0
 
-  #TODO: Update to registry once make check passes for the below repo after story 130 is complete
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh_gateway_route.git?ref=1.0.1"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws"
+  version = "~> 1.0"
 
   name                 = module.resource_names["gateway_route"].standard
   virtual_gateway_name = var.virtual_gateway_name
   virtual_service_name = module.resource_names["virtual_service"].standard
   # Currently supports only 1 gateway route for the first port in the list of application ports. Need to strategize support of multiple ports
-  # The traffic is forwarded as: vgw -> app_envoy -> mitmproxy(encoder) -> app
-  virtual_service_port = length(var.mitm_proxy_ports) > 0 ? var.mitm_proxy_ports[0] : null
+  # The traffic is forwarded as: vgw -> app_envoy -> app
+  virtual_service_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
   app_mesh_name        = var.app_mesh_id
 
   match_hostname_exact  = var.match_hostname_exact
@@ -171,7 +170,7 @@ module "ecs_task_execution_policy" {
   namespace                     = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                         = var.instance_env
   environment                   = var.class_env
-  name                          = "${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
+  name                          = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_exec_policy"].name}-${var.instance_resource}"
   iam_policy_enabled            = true
   iam_override_policy_documents = [var.ecs_exec_role_custom_policy_json]
 }
@@ -186,7 +185,7 @@ module "ecs_task_policy" {
   namespace                   = "${var.logical_product_family}-${join("", split("-", var.region))}"
   stage                       = var.instance_env
   environment                 = var.class_env
-  name                        = "${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
+  name                        = "${var.logical_product_family}-${var.logical_product_service}-${var.resource_names_map["task_policy"].name}-${var.instance_resource}"
   iam_policy_enabled          = true
   iam_source_policy_documents = local.ecs_role_custom_policy_json
 }
@@ -250,7 +249,7 @@ module "sg_ecs_service" {
 # ECS Service
 module "app_ecs_service" {
   source  = "cloudposse/ecs-alb-service-task/aws"
-  version = "~> 0.69.0"
+  version = "~> 0.76.0"
 
   # This module generates its own name. Can't use the labels module
   namespace                          = "${var.logical_product_family}-${join("", split("-", var.region))}"
@@ -294,8 +293,7 @@ module "app_ecs_service" {
     type           = "APPMESH"
     container_name = local.envoy_container.name
     properties = {
-      # Envoy proxies traffic to mitmproxy (encoder) which then sends it to the app.
-      AppPorts = join(",", var.mitm_proxy_ports)
+      AppPorts = join(",", var.app_ports)
       # These values are static and doesn't change for App Mesh. Hence, are hard-coded
       EgressIgnoredIPs = "169.254.170.2,169.254.169.254"
       IgnoredUID       = "1337"
@@ -309,7 +307,7 @@ module "app_ecs_service" {
 
 module "autoscaling_target" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.autoscaling_enabled ? 1 : 0
 
@@ -324,7 +322,7 @@ module "autoscaling_target" {
 
 module "autoscaling_policies" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   for_each = var.autoscaling_enabled && length(var.autoscaling_policies) > 0 ? var.autoscaling_policies : {}
 
