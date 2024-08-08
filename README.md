@@ -168,20 +168,20 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
-| <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0.0 |
-| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0.0 |
-| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0.0 |
-| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0.0 |
-| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0.0 |
-| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0.0 |
-| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws | ~> 1.0.0 |
+| <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0 |
+| <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0 |
+| <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0 |
+| <a name="module_virtual_route"></a> [virtual\_route](#module\_virtual\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws | ~> 1.0 |
+| <a name="module_virtual_node"></a> [virtual\_node](#module\_virtual\_node) | terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws | ~> 1.0 |
+| <a name="module_virtual_service"></a> [virtual\_service](#module\_virtual\_service) | terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws | ~> 1.0 |
+| <a name="module_gateway_route"></a> [gateway\_route](#module\_gateway\_route) | terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws | ~> 1.0 |
 | <a name="module_ecs_task_execution_policy"></a> [ecs\_task\_execution\_policy](#module\_ecs\_task\_execution\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_ecs_task_policy"></a> [ecs\_task\_policy](#module\_ecs\_task\_policy) | cloudposse/iam-policy/aws | ~> 0.4.0 |
 | <a name="module_container_definitions"></a> [container\_definitions](#module\_container\_definitions) | git::https://github.com/cloudposse/terraform-aws-ecs-container-definition.git | tags/0.59.0 |
 | <a name="module_sg_ecs_service"></a> [sg\_ecs\_service](#module\_sg\_ecs\_service) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
 | <a name="module_app_ecs_service"></a> [app\_ecs\_service](#module\_app\_ecs\_service) | cloudposse/ecs-alb-service-task/aws | ~> 0.76.0 |
-| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws | ~> 1.0.0 |
-| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws | ~> 1.0.0 |
+| <a name="module_autoscaling_target"></a> [autoscaling\_target](#module\_autoscaling\_target) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws | ~> 1.0 |
+| <a name="module_autoscaling_policies"></a> [autoscaling\_policies](#module\_autoscaling\_policies) | terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws | ~> 1.0 |
 
 ## Resources
 

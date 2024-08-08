@@ -31,7 +31,7 @@ module "resource_names" {
 # below must be provisioned for this name
 module "sds" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name         = module.resource_names["service_discovery_service"].standard
   namespace_id = var.namespace_id
@@ -42,7 +42,7 @@ module "sds" {
 # Create private certificates for virtual Service
 module "private_cert" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   private_ca_arn = var.private_ca_arn
   # This domain name should be the SDS domain name used in the ECS service and must be < 64 characters
@@ -54,7 +54,7 @@ module "private_cert" {
 
 module "virtual_router" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
@@ -70,7 +70,7 @@ module "virtual_router" {
 
 module "virtual_route" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_route/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.enable_virtual_router ? 1 : 0
 
@@ -100,7 +100,7 @@ module "virtual_route" {
 # Virtual Node is the backend for Virtual Service and it connects the virtual service with the ECS Service using Service Discovery
 module "virtual_node" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   app_mesh_id                = var.app_mesh_id
   name                       = module.resource_names["virtual_node"].standard
@@ -124,7 +124,7 @@ module "virtual_node" {
 # A virtual service for the ECS app
 module "virtual_service" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_service/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name                = module.resource_names["virtual_service"].standard
   app_mesh_name       = var.app_mesh_id
@@ -139,7 +139,7 @@ module "gateway_route" {
   count = var.create_gateway_route ? 1 : 0
 
   source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh_gateway_route/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   name                 = module.resource_names["gateway_route"].standard
   virtual_gateway_name = var.virtual_gateway_name
@@ -307,7 +307,7 @@ module "app_ecs_service" {
 
 module "autoscaling_target" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_target/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   count = var.autoscaling_enabled ? 1 : 0
 
@@ -322,7 +322,7 @@ module "autoscaling_target" {
 
 module "autoscaling_policies" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/autoscaling_policy/aws"
-  version = "~> 1.0.0"
+  version = "~> 1.0"
 
   for_each = var.autoscaling_enabled && length(var.autoscaling_policies) > 0 ? var.autoscaling_policies : {}
 
