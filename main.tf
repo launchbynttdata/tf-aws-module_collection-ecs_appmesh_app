@@ -249,7 +249,7 @@ module "sg_ecs_service" {
 # ECS Service
 module "app_ecs_service" {
   source  = "cloudposse/ecs-alb-service-task/aws"
-  version = "~> 0.69.0"
+  version = "~> 0.76.0"
 
   # This module generates its own name. Can't use the labels module
   namespace                          = "${var.logical_product_family}-${join("", split("-", var.region))}"
