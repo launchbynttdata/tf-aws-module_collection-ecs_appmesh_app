@@ -60,10 +60,10 @@ module "virtual_router" {
 
   app_mesh_name = var.app_mesh_id
   name          = module.resource_names["virtual_router"].standard
-  #listeners = [for port in var. : {
-  #  protocol = "http"
-  #  port     = port
-  #}]
+  listeners = [for port in var.app_ports : {
+    protocol = "http"
+    port     = port
+  }]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_router"].standard })
 }
