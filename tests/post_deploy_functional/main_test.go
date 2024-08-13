@@ -32,13 +32,11 @@ func TestAppmeshIngressModule(t *testing.T) {
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
 		SetTestConfigFileName(infraTFVarFileNameDefault).
-		/* SetTestSpecificFlags(map[string]types.TestFlags{
+		SetTestSpecificFlags(map[string]types.TestFlags{
 			"complete": {
-				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,
+				"IS_TERRAFORM_IDEMPOTENT_APPLY": true,
 			},
-		}) */
-
-
+		}).
 		Build()
 
 	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableComplete)

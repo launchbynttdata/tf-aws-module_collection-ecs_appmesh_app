@@ -2,8 +2,11 @@ module github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app
 
 go 1.21.7
 
+replace github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app/tests/testimpl => ./tests/testimpl
+
 require (
 	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
+	github.com/launchbynttdata/tf-aws-module_collection-ecs_appmesh_app/tests/testimpl v0.0.0-00010101000000-000000000000
 )
 
 require (
