@@ -58,7 +58,7 @@ module "virtual_router" {
 
   count = var.enable_virtual_router ? 1 : 0
 
-  app_mesh_name = var.app_mesh_id
+  app_mesh_name = local.app_mesh_name
   name          = module.resource_names["virtual_router"].standard
   listeners = [for port in var.app_ports : {
     protocol = "http"
@@ -76,7 +76,7 @@ module "virtual_route" {
 
   name                = module.resource_names["router_route"].standard
   priority            = 0
-  app_mesh_name       = var.app_mesh_id
+  app_mesh_name       = local.app_mesh_name
   virtual_router_name = module.virtual_router[0].name
   virtual_router_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
   route_targets = [
@@ -102,7 +102,7 @@ module "virtual_node" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_node/aws"
   version = "~> 1.0"
 
-  app_mesh_id                = var.app_mesh_id
+  app_mesh_id                = local.app_mesh_name
   name                       = module.resource_names["virtual_node"].standard
   namespace_name             = var.namespace_name
   service_name               = module.resource_names["virtual_service"].standard
@@ -127,11 +127,13 @@ module "virtual_service" {
   version = "~> 1.0"
 
   name                = module.resource_names["virtual_service"].standard
-  app_mesh_name       = var.app_mesh_id
+  app_mesh_name       = local.app_mesh_name
   virtual_node_name   = var.enable_virtual_router ? "" : module.virtual_node.name
   virtual_router_name = var.enable_virtual_router ? module.virtual_router[0].name : ""
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_service"].standard })
+
+  depends_on = [module.virtual_router]
 }
 
 module "gateway_route" {
@@ -147,7 +149,7 @@ module "gateway_route" {
   # Currently supports only 1 gateway route for the first port in the list of application ports. Need to strategize support of multiple ports
   # The traffic is forwarded as: vgw -> app_envoy -> app
   virtual_service_port = length(var.app_ports) > 0 ? var.app_ports[0] : null
-  app_mesh_name        = var.app_mesh_id
+  app_mesh_name        = local.app_mesh_name
 
   match_hostname_exact  = var.match_hostname_exact
   match_hostname_suffix = var.match_hostname_suffix

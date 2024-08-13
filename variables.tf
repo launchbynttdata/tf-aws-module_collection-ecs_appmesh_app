@@ -156,7 +156,7 @@ variable "vpc_id" {
 }
 
 variable "private_subnets" {
-  description = "List of private subnets"
+  description = "List of private subnet CIDRs"
   type        = list(string)
 }
 
@@ -175,7 +175,7 @@ variable "namespace_id" {
 ## App Mesh related variables
 
 variable "app_mesh_id" {
-  description = "Id/Name of the App Mesh"
+  description = "Id/Arn of the App Mesh"
   type        = string
 }
 

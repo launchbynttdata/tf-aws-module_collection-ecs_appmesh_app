@@ -20,6 +20,7 @@
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | 5.0.0 |
 | <a name="module_ecs_platform"></a> [ecs\_platform](#module\_ecs\_platform) | terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_platform/aws | ~> 1.0 |
+| <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws | ~> 1.0 |
 | <a name="module_ecs_appmesh_app"></a> [ecs\_appmesh\_app](#module\_ecs\_appmesh\_app) | ../.. | n/a |
 
 ## Resources
@@ -39,10 +40,16 @@
 | <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Number that represents the instance of the resource. | `number` | `0` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"us-east-2"` | no |
 | <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "acm": {<br>    "max_length": 60,<br>    "name": "acm"<br>  },<br>  "alb": {<br>    "max_length": 32,<br>    "name": "alb"<br>  },<br>  "alb_sg": {<br>    "max_length": 60,<br>    "name": "albsg"<br>  },<br>  "alb_tg": {<br>    "max_length": 60,<br>    "name": "albtg"<br>  },<br>  "health_check_app_ecs_sg": {<br>    "max_length": 60,<br>    "name": "hcappsg"<br>  },<br>  "health_check_ecs_app": {<br>    "max_length": 60,<br>    "name": "hcsvc"<br>  },<br>  "health_check_ecs_td": {<br>    "max_length": 60,<br>    "name": "hctd"<br>  },<br>  "s3_logs": {<br>    "max_length": 60,<br>    "name": "alblogs"<br>  },<br>  "sds_vg": {<br>    "max_length": 60,<br>    "name": "sdsvg"<br>  },<br>  "task_exec_policy": {<br>    "max_length": 60,<br>    "name": "execplcy"<br>  },<br>  "task_policy": {<br>    "max_length": 60,<br>    "name": "taskplcy"<br>  },<br>  "vgw_ecs_app": {<br>    "max_length": 60,<br>    "name": "vgwsvc"<br>  },<br>  "vgw_ecs_sg": {<br>    "max_length": 60,<br>    "name": "vgwsg"<br>  },<br>  "vgw_ecs_td": {<br>    "max_length": 60,<br>    "name": "vgwtd"<br>  },<br>  "virtual_gateway": {<br>    "max_length": 60,<br>    "name": "vgw"<br>  }<br>}</pre> | no |
-| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | CIDR block related to the VPC | `string` | `"172.31.0.0/16"` | no |
-| <a name="input_private_subnet_cidrs"></a> [private\_subnet\_cidrs](#input\_private\_subnet\_cidrs) | List of private subnet CIDRs | `list(string)` | <pre>[<br>  "172.31.0.0/20",<br>  "172.31.16.0/20",<br>  "172.31.32.0/20"<br>]</pre> | no |
-| <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | List of private subnet IDs | `list(string)` | <pre>[<br>  "subnet-0f1ca804fd2b81542",<br>  "subnet-0d1d4e3959758d4a7",<br>  "subnet-049b7adef3cafc0f8"<br>]</pre> | no |
+| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | CIDR block related to the VPC | `string` | `"172.55.0.0/16"` | no |
+| <a name="input_private_subnet_cidrs"></a> [private\_subnet\_cidrs](#input\_private\_subnet\_cidrs) | List of private subnet CIDRs | `list(string)` | <pre>[<br>  "172.55.0.0/20",<br>  "172.55.16.0/20",<br>  "172.55.32.0/20"<br>]</pre> | no |
 | <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of availability zones for the VPC | `list(string)` | <pre>[<br>  "us-east-2a",<br>  "us-east-2b",<br>  "us-east-2c"<br>]</pre> | no |
+| <a name="input_tls_enforce"></a> [tls\_enforce](#input\_tls\_enforce) | Whether to enforce TLS in App Mesh Virtual Gateway and services | `bool` | `false` | no |
+| <a name="input_vgw_logs_text_format"></a> [vgw\_logs\_text\_format](#input\_vgw\_logs\_text\_format) | The text format. | `string` | `null` | no |
+| <a name="input_vgw_tls_mode"></a> [vgw\_tls\_mode](#input\_vgw\_tls\_mode) | The mode for the listener’s Transport Layer Security (TLS) configuration. Must be one of DISABLED, PERMISSIVE, STRICT. | `string` | `"DISABLED"` | no |
+| <a name="input_vgw_health_check_path"></a> [vgw\_health\_check\_path](#input\_vgw\_health\_check\_path) | The destination path for the health check request. | `string` | `"/"` | no |
+| <a name="input_vgw_health_check_protocol"></a> [vgw\_health\_check\_protocol](#input\_vgw\_health\_check\_protocol) | The protocol for the health check request. Must be one of [http http2 grpc]. | `string` | `"http"` | no |
+| <a name="input_vgw_listener_port"></a> [vgw\_listener\_port](#input\_vgw\_listener\_port) | The port mapping information for the listener. | `number` | `8080` | no |
+| <a name="input_vgw_listener_protocol"></a> [vgw\_listener\_protocol](#input\_vgw\_listener\_protocol) | The protocol for the port mapping. Must be one of [http http2 grpc]. | `string` | `"http"` | no |
 | <a name="input_interface_vpc_endpoints"></a> [interface\_vpc\_endpoints](#input\_interface\_vpc\_endpoints) | List of VPC endpoints to be created | <pre>map(object({<br>    service_name        = string<br>    subnet_names        = optional(list(string), [])<br>    private_dns_enabled = optional(bool, false)<br>    tags                = optional(map(string), {})<br>  }))</pre> | `{}` | no |
 | <a name="input_gateway_vpc_endpoints"></a> [gateway\_vpc\_endpoints](#input\_gateway\_vpc\_endpoints) | List of VPC endpoints to be created | <pre>map(object({<br>    service_name        = string<br>    subnet_names        = optional(list(string), [])<br>    private_dns_enabled = optional(bool, false)<br>    tags                = optional(map(string), {})<br>  }))</pre> | `{}` | no |
 | <a name="input_vpce_security_group"></a> [vpce\_security\_group](#input\_vpce\_security\_group) | Default security group to be attached to all VPC endpoints | <pre>object({<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>  })</pre> | `null` | no |
@@ -56,7 +63,7 @@
 | <a name="input_match_path_prefix"></a> [match\_path\_prefix](#input\_match\_path\_prefix) | Gateway route match path prefix. Default is `/`. Conflicts with var.match\_path\_exact and var.match\_path\_regex | `string` | `"/"` | no |
 | <a name="input_namespace_name"></a> [namespace\_name](#input\_namespace\_name) | Namespace name of the CloudMap namespace which the Virtual Node references. | `string` | n/a | yes |
 | <a name="input_namespace_id"></a> [namespace\_id](#input\_namespace\_id) | ID of the CloudMap namespace in which SDS to be created. | `string` | n/a | yes |
-| <a name="input_app_mesh_id"></a> [app\_mesh\_id](#input\_app\_mesh\_id) | Id/Name of the App Mesh | `string` | n/a | yes |
+| <a name="input_app_mesh_id"></a> [app\_mesh\_id](#input\_app\_mesh\_id) | Id/Arn of the App Mesh | `string` | n/a | yes |
 | <a name="input_ecs_cluster_arn"></a> [ecs\_cluster\_arn](#input\_ecs\_cluster\_arn) | ARN of the ECS Fargate cluster in which the service is to be deployed | `string` | n/a | yes |
 | <a name="input_ignore_changes_task_definition"></a> [ignore\_changes\_task\_definition](#input\_ignore\_changes\_task\_definition) | Lifecycle ignore policy for task definition. If true, terraform won't detect changes when task\_definition is changed outside of terraform | `bool` | `true` | no |
 | <a name="input_ignore_changes_desired_count"></a> [ignore\_changes\_desired\_count](#input\_ignore\_changes\_desired\_count) | Lifecycle ignore policy for desired\_count. If true, terraform won't detect changes when desired\_count is changed outside of terraform | `bool` | `true` | no |
@@ -66,5 +73,9 @@
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_virtual_gateway_name"></a> [virtual\_gateway\_name](#output\_virtual\_gateway\_name) | Name of the Virtual gateway in which gateway route will be created |
+| <a name="output_app_mesh_id"></a> [app\_mesh\_id](#output\_app\_mesh\_id) | Id/Arn of the App Mesh |
+| <a name="output_app_mesh_name"></a> [app\_mesh\_name](#output\_app\_mesh\_name) | Name of the App Mesh |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

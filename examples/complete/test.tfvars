@@ -5,9 +5,12 @@
 # In the case of *.ingress_cidr_blocks, see var.vpc_cidr default value (or override it below with that of the existing
 # VPC you have selected) then duplicate it into both SGs' ingress_cidr_blocks
 
-namespace_name  = "sandbox.launch.nttdata.com"
-namespace_id    = "ns-c7lazkvdal7jroz6"
-app_mesh_id     = "arn:aws:appmesh:us-east-2:020127659860:mesh/for_ecs_appmesh_app"
+#These two var values should refer to the same resource
+namespace_name = "sandbox.launch.nttdata.com"
+namespace_id   = "ns-c7lazkvdal7jroz6"
+
+app_mesh_id = "arn:aws:appmesh:us-east-2:020127659860:mesh/for_ecs_appmesh_app"
+
 ecs_cluster_arn = "arn:aws:ecs:us-east-2:020127659860:cluster/vpn-poc-fargate-cluster1"
 
 interface_vpc_endpoints = {
@@ -27,10 +30,6 @@ interface_vpc_endpoints = {
     service_name        = "logs"
     private_dns_enabled = true
   }
-  appmeshenvoymgmt = {
-    service_name        = "appmesh-envoy-management"
-    private_dns_enabled = true
-  }
   appmesh = {
     service_name        = "appmesh"
     private_dns_enabled = true
@@ -46,7 +45,7 @@ gateway_vpc_endpoints = {
 
 vpce_security_group = {
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
-  ingress_cidr_blocks = ["172.31.0.0/16"]
+  ingress_cidr_blocks = ["172.55.0.0/16"]
   egress_rules        = ["all-all"]
   egress_cidr_blocks  = ["0.0.0.0/0"]
 }
@@ -61,7 +60,7 @@ app_port      = 8080
 app_security_group = {
   egress_rules        = ["all-all"]
   egress_cidr_blocks  = ["0.0.0.0/0"]
-  ingress_cidr_blocks = ["172.31.0.0/16"]
+  ingress_cidr_blocks = ["172.55.0.0/16"]
   ingress_with_cidr_blocks = [
     {
       from_port = 8080

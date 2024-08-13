@@ -16,6 +16,8 @@ locals {
     provisioner = "Terraform"
   }
 
+  app_mesh_name = reverse(split("/", var.app_mesh_id))[0]
+
   naming_prefix = "${var.logical_product_family}-${var.logical_product_service}"
 
   ingress_with_sg_block = coalesce(try(lookup(var.ecs_security_group, "ingress_with_sg", []), []), [])

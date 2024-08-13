@@ -11,6 +11,14 @@
 // limitations under the License.
 
 locals {
+  default_tags = {
+    provisioner = "Terraform"
+  }
+
+  app_mesh_name = reverse(split("/", var.app_mesh_id))[0]
+
+  tags = merge(local.default_tags, var.tags)
+
   random_id = random_integer.priority.result
   vpc_name  = "${var.logical_product_family}-${var.logical_product_service}-vpc-${local.random_id}"
 }

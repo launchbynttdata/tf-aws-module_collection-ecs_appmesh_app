@@ -42,14 +42,14 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  tags = var.tags
+  tags = local.tags
 }
 
 module "ecs_platform" {
   source                  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_platform/aws"
   version                 = "~> 1.0"
   vpc_id                  = module.vpc.vpc_id
-  private_subnets         = var.private_subnet_ids
+  private_subnets         = module.vpc.private_subnets
   gateway_vpc_endpoints   = var.gateway_vpc_endpoints
   interface_vpc_endpoints = var.interface_vpc_endpoints
   # Need to inject route_table_ids for gateway endpoints
@@ -67,27 +67,27 @@ module "ecs_platform" {
   namespace_name        = var.namespace_name
   namespace_description = "Namespace for testing appmesh app"
 
-  tags = var.tags
-
-  depends_on = [module.vpc]
+  tags = local.tags
 }
 
-/*
-  namespace_name =
-  router_retry_policy =
-  app_environment =
-  app_secrets =
-  autoscaling_policies =
-  app_health_check_path =
-  app_health_check_options =
-  match_hostname_suffix/exact =
-  tags =
-  opentelemetry_config_file_contents =
-  app_mounts =
-  bind_mount_volumes =
-  extra_containers =
-  app_depends_on_extra =
-*/
+module "virtual_gateway" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws"
+  version = "~> 1.0"
+
+  name      = module.resource_names["virtual_gateway"].standard
+  mesh_name = local.app_mesh_name
+
+  tls_enforce           = var.tls_enforce
+  health_check_path     = var.vgw_health_check_path
+  health_check_port     = var.vgw_listener_port
+  health_check_protocol = var.vgw_health_check_protocol
+  listener_port         = var.vgw_listener_port
+  listener_protocol     = var.vgw_listener_protocol
+  tls_mode              = var.vgw_tls_mode
+  text_format           = var.vgw_logs_text_format
+
+  tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
+}
 
 module "ecs_appmesh_app" {
   source = "../.."
@@ -101,11 +101,11 @@ module "ecs_appmesh_app" {
   instance_resource       = var.instance_resource
 
   vpc_id               = module.vpc.vpc_id
-  private_subnets      = var.private_subnet_cidrs
+  private_subnets      = module.vpc.private_subnets
   namespace_name       = var.namespace_name
   namespace_id         = var.namespace_id
   app_mesh_id          = var.app_mesh_id
-  virtual_gateway_name = module.resource_names["virtual_gateway"].standard
+  virtual_gateway_name = module.virtual_gateway.name
 
   private_ca_arn     = var.private_ca_arn
   ecs_cluster_arn    = var.ecs_cluster_arn
@@ -124,7 +124,7 @@ module "ecs_appmesh_app" {
   ignore_changes_task_definition = var.ignore_changes_task_definition
   wait_for_steady_state          = var.wait_for_steady_state
 
-  tags = var.tags
+  tags = local.tags
 
-  depends_on = [module.ecs_platform]
+  depends_on = [module.virtual_gateway]
 }

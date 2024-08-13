@@ -158,20 +158,13 @@ variable "resource_names_map" {
 variable "vpc_cidr" {
   type        = string
   description = "CIDR block related to the VPC"
-  default     = "172.31.0.0/16"
+  default     = "172.55.0.0/16"
 }
 
 variable "private_subnet_cidrs" {
   type        = list(string)
   description = "List of private subnet CIDRs"
-  default     = ["172.31.0.0/20", "172.31.16.0/20", "172.31.32.0/20"]
-}
-
-variable "private_subnet_ids" {
-  type        = list(string)
-  description = "List of private subnet IDs"
-  # These shouldy correspond to the CIDR ranges in the above variable
-  default = ["subnet-0f1ca804fd2b81542", "subnet-0d1d4e3959758d4a7", "subnet-049b7adef3cafc0f8"]
+  default     = ["172.55.0.0/20", "172.55.16.0/20", "172.55.32.0/20"]
 }
 
 variable "availability_zones" {
@@ -180,7 +173,51 @@ variable "availability_zones" {
   default     = ["us-east-2a", "us-east-2b", "us-east-2c"]
 }
 
-## VPC Endpoint related
+### Virtual Gateway related variables
+
+variable "tls_enforce" {
+  description = "Whether to enforce TLS in App Mesh Virtual Gateway and services"
+  type        = bool
+  default     = false
+}
+
+variable "vgw_logs_text_format" {
+  description = "The text format."
+  type        = string
+  default     = null
+}
+
+variable "vgw_tls_mode" {
+  description = "The mode for the listener’s Transport Layer Security (TLS) configuration. Must be one of DISABLED, PERMISSIVE, STRICT."
+  type        = string
+  default     = "DISABLED"
+}
+
+variable "vgw_health_check_path" {
+  description = "The destination path for the health check request."
+  type        = string
+  default     = "/"
+}
+
+variable "vgw_health_check_protocol" {
+  description = "The protocol for the health check request. Must be one of [http http2 grpc]."
+  type        = string
+  default     = "http"
+}
+
+variable "vgw_listener_port" {
+  description = "The port mapping information for the listener."
+  type        = number
+  default     = 8080
+}
+
+variable "vgw_listener_protocol" {
+  description = "The protocol for the port mapping. Must be one of [http http2 grpc]."
+  type        = string
+  default     = "http"
+}
+
+
 ### VPC Endpoints related variables
 variable "interface_vpc_endpoints" {
   description = "List of VPC endpoints to be created"
@@ -290,7 +327,7 @@ variable "namespace_id" {
 ## App Mesh related variables
 
 variable "app_mesh_id" {
-  description = "Id/Name of the App Mesh"
+  description = "Id/Arn of the App Mesh"
   type        = string
 }
 

@@ -34,7 +34,7 @@ func TestAppmeshIngressModule(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		SetTestSpecificFlags(map[string]types.TestFlags{
 			"complete": {
-				"IS_TERRAFORM_IDEMPOTENT_APPLY": true,
+				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,
 			},
 		}).
 		Build()
