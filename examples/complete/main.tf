@@ -15,6 +15,14 @@ resource "random_integer" "priority" {
   max = 50000
 }
 
+#TODO: Add more test coverage for what we do have
+#TODO: Just bite the bullet and use TLS too
+#TODO: Need two services that can talk to each other
+#TODO: Need a fargate cluster
+#TODO: Need an NLB according to AWS docs
+#TODO: Actually need an ALB according to other docs
+#TODO: Need to pass a variable into clustered services to indicate which one has been reached
+
 module "resource_names" {
   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
   version = "~> 1.0"

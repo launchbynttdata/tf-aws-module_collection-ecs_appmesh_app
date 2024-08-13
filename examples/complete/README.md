@@ -78,4 +78,5 @@
 | <a name="output_virtual_gateway_name"></a> [virtual\_gateway\_name](#output\_virtual\_gateway\_name) | Name of the Virtual gateway in which gateway route will be created |
 | <a name="output_app_mesh_id"></a> [app\_mesh\_id](#output\_app\_mesh\_id) | Id/Arn of the App Mesh |
 | <a name="output_app_mesh_name"></a> [app\_mesh\_name](#output\_app\_mesh\_name) | Name of the App Mesh |
+| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | ID of the VPC |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

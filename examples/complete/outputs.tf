@@ -24,3 +24,8 @@ output "app_mesh_name" {
   description = "Name of the App Mesh"
   value       = local.app_mesh_name
 }
+
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = module.vpc.vpc_id
+}

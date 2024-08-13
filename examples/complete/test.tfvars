@@ -13,6 +13,9 @@ app_mesh_id = "arn:aws:appmesh:us-east-2:020127659860:mesh/for_ecs_appmesh_app"
 
 ecs_cluster_arn = "arn:aws:ecs:us-east-2:020127659860:cluster/vpn-poc-fargate-cluster1"
 
+#Avoid naming conflicts with concurrent ecs_appmesh_ingress testing
+instance_resource = 10
+
 interface_vpc_endpoints = {
   ecrdkr = {
     service_name        = "ecr.dkr"
