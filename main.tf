@@ -66,6 +66,8 @@ module "virtual_router" {
   }]
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_router"].standard })
+
+  depends_on = [module.virtual_node]
 }
 
 module "virtual_route" {
@@ -117,7 +119,7 @@ module "virtual_node" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_node"].standard })
 
-  depends_on = [module.sds]
+  depends_on = [module.private_cert]
 
 }
 
@@ -133,7 +135,7 @@ module "virtual_service" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_service"].standard })
 
-  depends_on = [module.virtual_router]
+  depends_on = [module.virtual_node, module.virtual_router]
 }
 
 module "gateway_route" {
@@ -158,7 +160,7 @@ module "gateway_route" {
 
   tags = merge(local.tags, { resource_name = module.resource_names["gateway_route"].standard })
 
-  depends_on = [module.virtual_service, module.virtual_node]
+  depends_on = [module.virtual_service]
 }
 
 # The permissions needed by ECS task to start
@@ -305,6 +307,8 @@ module "app_ecs_service" {
   }
 
   tags = merge(local.tags, { resource_name = module.resource_names["ecs_app"].standard })
+
+  depends_on = [module.container_definitions, module.sg_ecs_service, module.sds]
 }
 
 module "autoscaling_target" {
