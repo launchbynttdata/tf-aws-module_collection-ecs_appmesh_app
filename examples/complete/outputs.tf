@@ -14,18 +14,22 @@ output "virtual_gateway_name" {
   description = "Name of the Virtual gateway in which gateway route will be created"
   value       = module.virtual_gateway.name
 }
-
 output "app_mesh_id" {
   description = "Id/Arn of the App Mesh"
   value       = var.app_mesh_id
 }
-
 output "app_mesh_name" {
   description = "Name of the App Mesh"
   value       = local.app_mesh_name
 }
-
 output "vpc_id" {
   description = "ID of the VPC"
   value       = module.vpc.vpc_id
+}
+output "vpc_name" {
+  description = "Name of the VPC"
+  value       = local.vpc_name
+}
+output "private_subnet_cidrs" {
+  value = module.vpc.private_subnets
 }

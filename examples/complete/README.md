@@ -21,7 +21,7 @@
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | 5.0.0 |
 | <a name="module_ecs_platform"></a> [ecs\_platform](#module\_ecs\_platform) | terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_platform/aws | ~> 1.0 |
 | <a name="module_virtual_gateway"></a> [virtual\_gateway](#module\_virtual\_gateway) | terraform.registry.launch.nttdata.com/module_primitive/virtual_gateway/aws | ~> 1.0 |
-| <a name="module_ecs_appmesh_app"></a> [ecs\_appmesh\_app](#module\_ecs\_appmesh\_app) | ../.. | n/a |
+| <a name="module_ecs_appmesh_app1"></a> [ecs\_appmesh\_app1](#module\_ecs\_appmesh\_app1) | ../.. | n/a |
 
 ## Resources
 
@@ -79,4 +79,6 @@
 | <a name="output_app_mesh_id"></a> [app\_mesh\_id](#output\_app\_mesh\_id) | Id/Arn of the App Mesh |
 | <a name="output_app_mesh_name"></a> [app\_mesh\_name](#output\_app\_mesh\_name) | Name of the App Mesh |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | ID of the VPC |
+| <a name="output_vpc_name"></a> [vpc\_name](#output\_vpc\_name) | Name of the VPC |
+| <a name="output_private_subnet_cidrs"></a> [private\_subnet\_cidrs](#output\_private\_subnet\_cidrs) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

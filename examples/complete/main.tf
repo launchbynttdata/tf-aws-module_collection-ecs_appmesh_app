@@ -97,7 +97,7 @@ module "virtual_gateway" {
   tags = merge(local.tags, { resource_name = module.resource_names["virtual_gateway"].standard })
 }
 
-module "ecs_appmesh_app" {
+module "ecs_appmesh_app1" {
   source = "../.."
 
   logical_product_family = var.logical_product_family
