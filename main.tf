@@ -12,7 +12,7 @@
 
 module "resource_names" {
   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   for_each = var.resource_names_map
 
@@ -252,15 +252,14 @@ module "app_ecs_service" {
   version = "~> 0.76.0"
 
   # This module generates its own name. Can't use the labels module
-  namespace                          = "${var.logical_product_family}-${join("", split("-", var.region))}"
-  stage                              = var.instance_env
+  namespace                          = "${var.logical_product_family}-${var.logical_product_service}-${join("", split("-", var.region))}"
+  stage                              = format("%03d", var.instance_env)
   name                               = var.resource_names_map["ecs_app"].name
   environment                        = var.class_env
-  attributes                         = [var.instance_resource]
+  attributes                         = [format("%03d", var.instance_resource)]
   delimiter                          = "-"
   container_definition_json          = jsonencode([for name, container in module.container_definitions : container.json_map_object])
   ecs_cluster_arn                    = var.ecs_cluster_arn
-  launch_type                        = var.ecs_launch_type
   vpc_id                             = var.vpc_id
   security_group_ids                 = [module.sg_ecs_service.security_group_id]
   security_group_enabled             = false
@@ -269,7 +268,6 @@ module "app_ecs_service" {
   ignore_changes_desired_count       = var.ignore_changes_desired_count
   task_exec_policy_arns_map          = local.task_exec_policy_arns_map
   task_policy_arns_map               = local.task_policy_arns_map
-  network_mode                       = var.network_mode
   assign_public_ip                   = var.assign_public_ip
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
