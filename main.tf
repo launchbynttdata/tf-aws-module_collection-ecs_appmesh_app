@@ -44,6 +44,8 @@ module "private_cert" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws"
   version = "~> 1.0"
 
+  count = var.tls_enforce ? 1 : 0
+
   private_ca_arn = var.private_ca_arn
   # This domain name should be the SDS domain name used in the ECS service and must be < 64 characters
   domain_name               = local.updated_domain_name
@@ -110,7 +112,7 @@ module "virtual_node" {
   ports                      = var.app_ports
   protocol                   = "http"
   certificate_authority_arns = [var.private_ca_arn]
-  acm_certificate_arn        = module.private_cert.certificate_arn
+  acm_certificate_arn        = var.tls_enforce ? module.private_cert[0].certificate_arn : null
   health_check_path          = var.virtual_node_app_health_check_path
   idle_duration              = var.idle_duration
   per_request_timeout        = var.per_request_timeout
