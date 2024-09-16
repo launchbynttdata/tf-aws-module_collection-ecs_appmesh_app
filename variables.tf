@@ -264,12 +264,12 @@ variable "print_container_json" {
 }
 
 variable "ecs_cluster_arn" {
-  description = "ARN of the ECS Fargate cluster in which the service is to be deployed"
+  description = "(Required) ARN of the ECS Fargate cluster in which the service is to be deployed"
   type        = string
 }
 
 variable "app_image_tag" {
-  description = "The docker image of the application in the format <docker_image>:<tag>"
+  description = "(Required) The docker image of the application in the format <docker_image>:<tag>"
   type        = string
 }
 
@@ -333,7 +333,7 @@ variable "app_health_check_path" {
 }
 
 variable "app_health_check_options" {
-  description = "Health Check options for the app container."
+  description = "Health Check options for the app container. Applicable only when the app_health_check_path is configured"
   type = object({
     retries     = number
     timeout     = number
@@ -350,7 +350,7 @@ variable "app_health_check_options" {
 }
 
 variable "ecs_security_group" {
-  description = "Security group for the  ECS application."
+  description = "Security group for the  ECS application. Must allow the ingress from the virtual gateway on app port"
   type = object({
     ingress_rules            = optional(list(string))
     ingress_cidr_blocks      = optional(list(string))
@@ -386,22 +386,10 @@ variable "envoy_proxy_image" {
   default     = ""
 }
 
-variable "ecs_launch_type" {
-  description = "The launch type of the ECS service. Default is FARGATE"
-  type        = string
-  default     = "FARGATE"
-}
-
-variable "network_mode" {
-  description = "The network_mode of the ECS service. Default is awsvpc"
-  type        = string
-  default     = "awsvpc"
-}
-
 variable "ignore_changes_task_definition" {
   description = "Lifecycle ignore policy for task definition. If true, terraform won't detect changes when task_definition is changed outside of terraform"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "assign_public_ip" {
@@ -413,7 +401,7 @@ variable "assign_public_ip" {
 variable "ignore_changes_desired_count" {
   description = "Lifecycle ignore policy for desired_count. If true, terraform won't detect changes when desired_count is changed outside of terraform"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "task_cpu" {
@@ -492,7 +480,12 @@ variable "create_gateway_route" {
 }
 
 variable "match_path_prefix" {
-  description = "Gateway route match path prefix. Default is `/`. Conflicts with var.match_path_exact and var.match_path_regex"
+  description = <<EOT
+    Gateway route match path prefix. Default is `/`. Conflicts with var.match_path_exact and var.match_path_regex
+
+    This is the path prefix to match the incoming request in the ingress url. For example, if the match_path_prefix = /test/,
+    then the request /test/a/b/test.html will be forwarded to the backend as /a/b/test.html
+  EOT
   type        = string
   default     = "/"
 }

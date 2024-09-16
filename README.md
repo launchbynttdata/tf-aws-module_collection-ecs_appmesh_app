@@ -16,21 +16,12 @@ This terraform module creates a ECS App (ecs service) with App Mesh enabled. The
 - Virtual Gateway route (optional if ingress is needed)
 - Service Discovery Service
 
-Added support for a mitmproxy (encoder) in the task. The traffic now will follow this route :
-```shell
-   client -> nginx -> mitm-proxy(decoder)-> Virtual Gateway -> App Envoy -> mitm-proxy(encoder) -> app
-```
-This was added to fix the issue that `envoy` introduces. The AWS provided envoy proxy image by default uses `http2` which normalizes (converts to lower case) all the response headers.
-In order to make this service compatible with other http1 compliant applications, the mitm-proxy (encoder) encodes the response headers before it travels through envoy.
-The mitm-proxy(decoder) then searches for any encoded headers and upon finding any, decodes and attaches them to the response
-before sending it to the client.
-
 ### Dependencies
 This module is dependent on `ecs_appmesh_platform` and `ecs_appmesh_ingress` modules. Those modules must be provisioned beforehand for this module to be provisioned
 
 ## Usage
-A sample variable file `example.tfvars` is available in the root directory which can be used to test this module. User needs to follow the below steps to execute this module
-1. Update the `example.tfvars` to manually enter values for all fields marked within `<>` to make the variable file usable
+A sample variable file [tfvars](sample-tfvars/app_w_tls_enabled.tfvars) is provided to test this module. User needs to follow the below steps to execute this module
+1. Update the tfvars file to manually enter values for all fields marked within `<>` to make the variable file usable
 2. Create a file `provider.tf` with the below contents
    ```
     provider "aws" {
@@ -51,9 +42,9 @@ A sample variable file `example.tfvars` is available in the root directory which
    ```
 
 ## Known Issues
-1. We cannot enable the flag `redeploy_on_apply=true`. An open provider issue is blocking that - https://github.com/hashicorp/terraform-provider-aws/issues/28070. Terraform will only deploy the service the very first time. For all subsequent deployments, we will use AWS CLI. The task definition and the service `desired_count` are added to lifecycle `ignore_changes` list. So, terraform won't detect changes made outside of terraform.
-2. Doesn't currently support creating `gateway routes` for multiple ports open in ECS Task. Gateway route will be created for the first port only.
-3. If the application port (var.app_ports) changes, then we need to destroy the module and recreate again. As we get an error while updating the virtual node listener that an existing gateway route is using the listener.
+
+1. Doesn't currently support creating `gateway routes` for multiple ports open in ECS Task. Gateway route will be created for the first port only.
+2. If the application port (var.app_ports) changes, then we need to destroy the module and recreate again. As we get an error while updating the virtual node listener that an existing gateway route is using the listener.
    ```shell
       Error: updating App Mesh Virtual Node (c3599c26-dbee-41d6-81ca-21018ff9bba4): BadRequestException: 1 Virtual Node listener(s) cannot be removed because they are targeted by existing Gateway Routes through Virtual Service provider. Listing up to 5 PortMappings: [(Port: 8080, Protocol: HTTP)]
    ```
@@ -156,7 +147,7 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, <= 1.5.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 
 ## Providers
@@ -167,7 +158,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_sds"></a> [sds](#module\_sds) | terraform.registry.launch.nttdata.com/module_primitive/service_discovery_service/aws | ~> 1.0 |
 | <a name="module_private_cert"></a> [private\_cert](#module\_private\_cert) | terraform.registry.launch.nttdata.com/module_primitive/acm_private_cert/aws | ~> 1.0 |
 | <a name="module_virtual_router"></a> [virtual\_router](#module\_virtual\_router) | terraform.registry.launch.nttdata.com/module_primitive/virtual_router/aws | ~> 1.0 |
@@ -213,8 +204,8 @@ No resources.
 | <a name="input_idle_duration"></a> [idle\_duration](#input\_idle\_duration) | Idle duration for all the listeners | <pre>object({<br>    unit  = string<br>    value = number<br>  })</pre> | `null` | no |
 | <a name="input_per_request_timeout"></a> [per\_request\_timeout](#input\_per\_request\_timeout) | Per Request timeout for all the listeners | <pre>object({<br>    unit  = string<br>    value = number<br>  })</pre> | `null` | no |
 | <a name="input_print_container_json"></a> [print\_container\_json](#input\_print\_container\_json) | Print the container JSON object as output. Useful for debugging | `bool` | `false` | no |
-| <a name="input_ecs_cluster_arn"></a> [ecs\_cluster\_arn](#input\_ecs\_cluster\_arn) | ARN of the ECS Fargate cluster in which the service is to be deployed | `string` | n/a | yes |
-| <a name="input_app_image_tag"></a> [app\_image\_tag](#input\_app\_image\_tag) | The docker image of the application in the format <docker\_image>:<tag> | `string` | n/a | yes |
+| <a name="input_ecs_cluster_arn"></a> [ecs\_cluster\_arn](#input\_ecs\_cluster\_arn) | (Required) ARN of the ECS Fargate cluster in which the service is to be deployed | `string` | n/a | yes |
+| <a name="input_app_image_tag"></a> [app\_image\_tag](#input\_app\_image\_tag) | (Required) The docker image of the application in the format <docker\_image>:<tag> | `string` | n/a | yes |
 | <a name="input_app_environment"></a> [app\_environment](#input\_app\_environment) | Environment variables to be injected into the application containers | `map(string)` | `{}` | no |
 | <a name="input_app_secrets"></a> [app\_secrets](#input\_app\_secrets) | Secrets to be injected into the application containers. Map of secret Manager ARNs | `map(string)` | `{}` | no |
 | <a name="input_autoscaling_enabled"></a> [autoscaling\_enabled](#input\_autoscaling\_enabled) | Flag to determine if auto scaling is enabled for the application | `bool` | `false` | no |
@@ -222,16 +213,14 @@ No resources.
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Max capacity of the scalable target. | `number` | `4` | no |
 | <a name="input_autoscaling_policies"></a> [autoscaling\_policies](#input\_autoscaling\_policies) | A map of autoscaling policies to be created for this ECS Service<br>    The `predefined_metric_type` must be ECSServiceAverageCPUUtilization or ECSServiceAverageMemoryUtilization<br>    `target_value` is the threshold for the metric at which the auto-scaling will be triggerred.<br>    `scale_in_cooldown` and `scale_out_cooldown` respectively are amount of time, in seconds, after a scale in activity<br>      completes before another scale in activity can start. | <pre>map(object({<br>    predefined_metric_type = string<br>    target_value           = string<br>    scale_in_cooldown      = optional(string, 60)<br>    scale_out_cooldown     = optional(string, 60)<br>  }))</pre> | `{}` | no |
 | <a name="input_app_health_check_path"></a> [app\_health\_check\_path](#input\_app\_health\_check\_path) | A path of the health endpoint inside the container for Container level health check. Example. `/health`.<br>    The complete health check would be http://localhost:<container\_port>/health<br>    By default is no health check configured | `string` | `""` | no |
-| <a name="input_app_health_check_options"></a> [app\_health\_check\_options](#input\_app\_health\_check\_options) | Health Check options for the app container. | <pre>object({<br>    retries     = number<br>    timeout     = number<br>    interval    = number<br>    startPeriod = number<br>  })</pre> | <pre>{<br>  "interval": 5,<br>  "retries": 3,<br>  "startPeriod": 300,<br>  "timeout": 2<br>}</pre> | no |
-| <a name="input_ecs_security_group"></a> [ecs\_security\_group](#input\_ecs\_security\_group) | Security group for the  ECS application. | <pre>object({<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>    ingress_with_sg          = optional(list(map(string)))<br>    egress_with_sg           = optional(list(map(string)))<br>  })</pre> | `null` | no |
+| <a name="input_app_health_check_options"></a> [app\_health\_check\_options](#input\_app\_health\_check\_options) | Health Check options for the app container. Applicable only when the app\_health\_check\_path is configured | <pre>object({<br>    retries     = number<br>    timeout     = number<br>    interval    = number<br>    startPeriod = number<br>  })</pre> | <pre>{<br>  "interval": 5,<br>  "retries": 3,<br>  "startPeriod": 300,<br>  "timeout": 2<br>}</pre> | no |
+| <a name="input_ecs_security_group"></a> [ecs\_security\_group](#input\_ecs\_security\_group) | Security group for the  ECS application. Must allow the ingress from the virtual gateway on app port | <pre>object({<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>    ingress_with_sg          = optional(list(map(string)))<br>    egress_with_sg           = optional(list(map(string)))<br>  })</pre> | `null` | no |
 | <a name="input_ecs_exec_role_custom_policy_json"></a> [ecs\_exec\_role\_custom\_policy\_json](#input\_ecs\_exec\_role\_custom\_policy\_json) | Custom policy to attach to ecs task execution role. Document must be valid json. | `string` | `""` | no |
 | <a name="input_ecs_role_custom_policy_json"></a> [ecs\_role\_custom\_policy\_json](#input\_ecs\_role\_custom\_policy\_json) | Custom policy to attach to ecs task role. Document must be valid json. | `string` | `""` | no |
 | <a name="input_envoy_proxy_image"></a> [envoy\_proxy\_image](#input\_envoy\_proxy\_image) | Optional docker image of the envoy proxy in the format `<docker_image>:<tag>`<br>    Default is `840364872350.dkr.ecr.us-east-2.amazonaws.com/aws-appmesh-envoy:v1.25.4.0-prod` | `string` | `""` | no |
-| <a name="input_ecs_launch_type"></a> [ecs\_launch\_type](#input\_ecs\_launch\_type) | The launch type of the ECS service. Default is FARGATE | `string` | `"FARGATE"` | no |
-| <a name="input_network_mode"></a> [network\_mode](#input\_network\_mode) | The network\_mode of the ECS service. Default is awsvpc | `string` | `"awsvpc"` | no |
-| <a name="input_ignore_changes_task_definition"></a> [ignore\_changes\_task\_definition](#input\_ignore\_changes\_task\_definition) | Lifecycle ignore policy for task definition. If true, terraform won't detect changes when task\_definition is changed outside of terraform | `bool` | `true` | no |
+| <a name="input_ignore_changes_task_definition"></a> [ignore\_changes\_task\_definition](#input\_ignore\_changes\_task\_definition) | Lifecycle ignore policy for task definition. If true, terraform won't detect changes when task\_definition is changed outside of terraform | `bool` | `false` | no |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | If true, public IP will be assigned to this service task, else private IP | `bool` | `false` | no |
-| <a name="input_ignore_changes_desired_count"></a> [ignore\_changes\_desired\_count](#input\_ignore\_changes\_desired\_count) | Lifecycle ignore policy for desired\_count. If true, terraform won't detect changes when desired\_count is changed outside of terraform | `bool` | `true` | no |
+| <a name="input_ignore_changes_desired_count"></a> [ignore\_changes\_desired\_count](#input\_ignore\_changes\_desired\_count) | Lifecycle ignore policy for desired\_count. If true, terraform won't detect changes when desired\_count is changed outside of terraform | `bool` | `false` | no |
 | <a name="input_task_cpu"></a> [task\_cpu](#input\_task\_cpu) | Amount of CPU to be allocated to the task | `number` | `512` | no |
 | <a name="input_task_memory"></a> [task\_memory](#input\_task\_memory) | Amount of Memory to be allocated to the task | `number` | `1024` | no |
 | <a name="input_health_check_grace_period_seconds"></a> [health\_check\_grace\_period\_seconds](#input\_health\_check\_grace\_period\_seconds) | Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 7200. Only valid for services configured to use load balancers | `number` | `0` | no |
@@ -243,7 +232,7 @@ No resources.
 | <a name="input_redeploy_on_apply"></a> [redeploy\_on\_apply](#input\_redeploy\_on\_apply) | Redeploys the service everytime a terraform apply is executed. force\_new\_deployment should also be true for this flag to work | `bool` | `false` | no |
 | <a name="input_force_new_deployment"></a> [force\_new\_deployment](#input\_force\_new\_deployment) | Enable to force a new task deployment of the service when terraform apply is executed. | `bool` | `false` | no |
 | <a name="input_create_gateway_route"></a> [create\_gateway\_route](#input\_create\_gateway\_route) | Whether to create an ingress Virtual Gateway route into the ECS application. Default is true<br>    Ingress route can be created in two ways:<br>    - Path matching: The incoming request is checked for a particular path prefix (example: `/app1`) and based on this,<br>      routed to the respective backend virtual service. If this routing is selected, var.match\_path\_prefix is mandatory<br>    - Hostname matching: The incoming request is checked for a particular HostName header (example: `app1.demo.com`<br>      and based on which is routed to the respective backend virtual service. If this routing is selected,<br>      either var.match\_hostname\_exact or var.match\_hostname\_regex is mandatory | `bool` | `true` | no |
-| <a name="input_match_path_prefix"></a> [match\_path\_prefix](#input\_match\_path\_prefix) | Gateway route match path prefix. Default is `/`. Conflicts with var.match\_path\_exact and var.match\_path\_regex | `string` | `"/"` | no |
+| <a name="input_match_path_prefix"></a> [match\_path\_prefix](#input\_match\_path\_prefix) | Gateway route match path prefix. Default is `/`. Conflicts with var.match\_path\_exact and var.match\_path\_regex<br><br>    This is the path prefix to match the incoming request in the ingress url. For example, if the match\_path\_prefix = /test/,<br>    then the request /test/a/b/test.html will be forwarded to the backend as /a/b/test.html | `string` | `"/"` | no |
 | <a name="input_rewrite_prefix"></a> [rewrite\_prefix](#input\_rewrite\_prefix) | Rewrite the prefix before sending the request to the backend. The supplied prefix will be prepended<br>    For example if the rewrite\_prefix = /test/, then the request /a/b/test.html will be forwarded to the backend<br>    as /test/a/b/test.html | `string` | `""` | no |
 | <a name="input_match_hostname_exact"></a> [match\_hostname\_exact](#input\_match\_hostname\_exact) | Gateway route match exact hostname. Conflicts with var.match\_hostname\_suffix | `string` | `null` | no |
 | <a name="input_match_hostname_suffix"></a> [match\_hostname\_suffix](#input\_match\_hostname\_suffix) | Gateway route match hostname suffix. Specified ending characters of the host name to match on.<br>    Conflicts with var.match\_hostname\_exact<br>    Example: *.abc.com | `string` | `null` | no |
