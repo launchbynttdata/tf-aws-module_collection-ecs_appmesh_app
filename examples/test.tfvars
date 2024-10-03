@@ -11,8 +11,9 @@ vpce_security_group = {
   egress_cidr_blocks  = ["0.0.0.0/0"]
 }
 
+
 # ECS AppMesh Variables
-namespace_name        = "my-namespace"
+namespace_name        = "appmesh_app"
 namespace_id          = "ns-xyz123"
 ecs_cluster_arn       = "arn:aws:ecs:us-east-1:123456789012:cluster/my-cluster"
 app_mesh_id           = "mesh-abc456"
@@ -40,7 +41,7 @@ alb_sg = {
 virtual_gateway_name  = "my-virtual-gateway"
 
 # Required arguments for ecs_appmesh_ingress module
-vgw_listener_port = 80
+vgw_listener_port = 808
 target_groups = [
   {
     name     = "my-target-group"
@@ -51,8 +52,15 @@ target_groups = [
 dns_zone_name = "example.com"
 desired_count = 1
 tags = {
-  "Owner"       = "Example Team"
+  "Owner"       = "dev Team"
   "Environment" = "dev"
+}
+
+ecs_security_group =  {
+  ingress_rules       = ["https-443-tcp", "http-80-tcp"]
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules        = ["all-all"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
 }
 
 vgw_security_group = {

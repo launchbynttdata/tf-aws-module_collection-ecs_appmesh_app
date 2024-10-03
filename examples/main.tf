@@ -1,8 +1,4 @@
 
-provider "aws" {
-  region = var.aws_region
-}
-
 # VPC Module
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -20,9 +16,10 @@ module "vpc" {
     Environment = "dev"
   }
 }
-
+# ecs_plateform Module
 module "ecs_platform" {
   source                  = "terraform.registry.launch.nttdata.com/module_collection/ecs_appmesh_platform/aws"
+  version                 = "~> 1.0"
   vpc_id                  = module.vpc.vpc_id
   private_subnets         = module.vpc.private_subnets
   gateway_vpc_endpoints   = var.gateway_vpc_endpoints
@@ -32,6 +29,7 @@ module "ecs_platform" {
   logical_product_service    = local.logical_product_service
   vpce_security_group        = var.vpce_security_group
   region                     = var.aws_region
+  namespace_name             = var.namespace_name
   tags = var.tags
 }
 
@@ -51,6 +49,7 @@ module "ecs_ingress" {
 
   alb_sg              = var.alb_sg
   use_https_listeners = true
+  private_zone        = var.private_zone
 
   dns_zone_name = lower(var.dns_zone_name)
   target_groups = [
@@ -88,15 +87,15 @@ module "ecs_ingress" {
 
 # ECS AppMesh Module
 
-module "ecs_appmesh" {
+module "ecs_appmesh_app" {
   source = "../"
 
-  logical_product_family  = "terratest"
-  logical_product_service = "ecs_appmesh"
-  class_env               = "dev"
-  instance_env            = 1
-  instance_resource       = 1
-  region                  = "us-east-1"
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  class_env               = var.class_env
+  instance_env            = var.instance_env
+  instance_resource       = var.instance_resource
+  region                  = var.aws_region
 
   vpc_id          = module.vpc.vpc_id
   private_subnets = module.vpc.private_subnets
@@ -106,17 +105,12 @@ module "ecs_appmesh" {
   ecs_cluster_arn = var.ecs_cluster_arn
   app_mesh_id     = var.app_mesh_id
 
-  app_ports                          = [8080]
-  app_image_tag                      = "myapp:latest"
-  app_health_check_path              = "/health"
-  virtual_node_app_health_check_path = "/health"
+  app_ports                          = var.app_ports
+  app_image_tag                      = var.app_image_tag
+  app_health_check_path              = var.app_health_check_path
+  virtual_node_app_health_check_path = var.virtual_node_app_health_check_path
 
-  ecs_security_group = {
-    ingress_rules       = ["https-443-tcp", "http-80-tcp"]
-    ingress_cidr_blocks = ["0.0.0.0/0"]
-    egress_rules        = ["all-all"]
-    egress_cidr_blocks  = ["0.0.0.0/0"]
-  }
+  ecs_security_group = var.ecs_security_group
 
   force_new_deployment           = true
   redeploy_on_apply              = true
@@ -124,14 +118,11 @@ module "ecs_appmesh" {
   ignore_changes_task_definition = false
   wait_for_steady_state          = false
 
-  desired_count     = 1
+  desired_count     = var.desired_count
   match_path_prefix = "/"
   tags = {
-    "Owner" = "Example Team"
+    "Owner" = "dev team"
   }
-
-  virtual_gateway_name = "<your-virtual-gateway-name>"
+  virtual_gateway_name = var.virtual_gateway_name
 }
-
-
 

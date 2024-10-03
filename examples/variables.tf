@@ -14,9 +14,6 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-
-
-
 # ECS Platfom Information
 variable "gateway_vpc_endpoints" {
   description = "List of VPC endpoints to be created. AWS currently only supports S3 and DynamoDB gateway interfaces"
@@ -67,14 +64,11 @@ variable "namespace_description" {
   default = ""
 }
 
-
-
-
-
 # ECS AppMesh Information
 variable "namespace_name" {
   description = "The name of the service discovery namespace."
   type        = string
+  default = "appmesh_app"
 }
 
 variable "ecs_cluster_arn" {
@@ -110,15 +104,6 @@ variable "app_port" {
   type        = number
 }
 
-# Security Group configuration
-
-
-# Virtual Gateway configuration
-variable "virtual_gateway_name" {
-  description = "Name of the AppMesh virtual gateway."
-  type        = string
-}
-
 # Additional required arguments for ecs_appmesh_ingress module
 variable "vgw_listener_port" {
   description = "Listener port for the virtual gateway."
@@ -147,29 +132,43 @@ variable "tags" {
 variable "logical_product_family" {
   description = "The logical product family name"
   type        = string
- default = "launch"
+ default = "terratest"
 }
+
+variable "instance_env" {
+  type        = number
+  description = "Number that represents the instance of the environment."
+  default     = 0
+
+  validation {
+    condition     = var.instance_env >= 0 && var.instance_env <= 999
+    error_message = "Instance number should be between 1 to 999."
+  }
+}
+
+
+variable "instance_resource" {
+  type        = number
+  description = "Number that represents the instance of the resource."
+  default     = 0
+
+  validation {
+    condition     = var.instance_resource >= 0 && var.instance_resource <= 100
+    error_message = "Instance number should be between 1 to 100."
+  }
+}
+
 
 variable "logical_product_service" {
   description = "The logical product service name"
   type        = string
-  default = "ecs"
+  default = "ecs_appmesh_app"
 }
 
 variable "aws_region" {
   description = "The AWS region"
   type        = string
-  default     = "us-east-1"
-}
-
-# variable "app_ports" {
-#   description = "The ports the application uses"
-#   type        = list(number)
-# }
-
-variable "desired_count" {
-  description = "The desired number of ECS tasks"
-  type        = number
+  default     = "us-east-2"
 }
 
 variable "app_health_check_path" {
@@ -180,6 +179,17 @@ variable "app_health_check_path" {
 variable "namespace_id" {
   description = "The ID of the service discovery namespace."
   type        = string
+}
+
+variable "virtual_gateway_name" {
+  description = "Name of the Virtual gateway in which gateway route will be created"
+  type        = string
+}
+
+variable "desired_count" {
+  type        = number
+  description = "The number of instances of the task definition to place and keep running"
+  default     = 1
 }
 
 # variable ECS_ingress
@@ -211,27 +221,39 @@ variable "vgw_security_group" {
   default = null
 }
 
-# variable "virtual_node_app_health_check_path" {
-#   description = "The health check path for the virtual node"
-#   type        = string
-# }
+variable "virtual_node_app_health_check_path" {
+  description = "The health check path for the virtual node"
+  type        = string
+  default = "/health"
+}
 
-# variable "ecs_security_group" {
-#   description = "Security group configuration for ECS"
-#   type = object({
-#     ingress_rules = list(object({
-#       from_port   = number
-#       to_port     = number
-#       protocol    = string
-#       description = string
-#     }))
-#     ingress_cidr_blocks = list(string)
-#     egress_rules = list(object({
-#       from_port   = number
-#       to_port     = number
-#       protocol    = string
-#       description = string
-#     }))
-#     egress_cidr_blocks = list(string)
-#   })
-# }
+variable "app_ports" {
+  description = "The port(s) at which the application is running, used as listeners in Virtual Node."
+  type        = list(number)
+  default = [ 8080 ]
+}
+
+variable "ecs_security_group" {
+  description = "Security group for the  ECS application. Must allow the ingress from the virtual gateway on app port"
+  type = object({
+    ingress_rules            = optional(list(string))
+    ingress_cidr_blocks      = optional(list(string))
+    ingress_with_cidr_blocks = optional(list(map(string)))
+    egress_rules             = optional(list(string))
+    egress_cidr_blocks       = optional(list(string))
+    egress_with_cidr_blocks  = optional(list(map(string)))
+    ingress_with_sg          = optional(list(map(string)))
+    egress_with_sg           = optional(list(map(string)))
+  })
+
+  default = null
+}
+
+variable "private_zone" {
+  description = <<EOT
+    Whether the dns_zone_name provided above is a private or public hosted zone. Required if dns_zone_name is not empty.
+    private_zone=true means the hosted zone is private and false means it is public.
+  EOT
+  type        = bool
+  default     = "false"
+}
